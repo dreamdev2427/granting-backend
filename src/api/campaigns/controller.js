@@ -30,7 +30,7 @@ exports.getAll = (req, res) => {
     Campaign.find({...req.body}, function (err, docs) {
     if (err) {
         console.log("Campaign doesn't exisit" + err.message);
-        return res.send({ code: -1, data:{}, message: "Internal server Error" });
+        return res.send({ code: -1, data:{}, message: "" });
     }
     else {        
         return res.send({ code:0, data: docs, message: "" });
@@ -42,7 +42,7 @@ exports.getOne = (req, res) => {
     Campaign.find({_id:req.body._id}, function (err, docs) {
     if (err) {
         console.log("Campaign doesn't exisit" + err.message);
-        return res.send({ code: -1, data:{}, message: "Internal server Error" });
+        return res.send({ code: -1, data:{}, message: "" });
     }
     else {        
         return res.send({ code:0, data: docs, message: "" });
@@ -55,7 +55,7 @@ exports.deleteOne = (req, res) => {
         if (!err)
             return res.send({ code: 0, data:{}, message:"" });
         else
-            return res.send({ code: -1, data:{}, message:"Internal Server Error" });
+            return res.send({ code: -1, data:{}, message:"" });
     });
 }
 
@@ -64,12 +64,10 @@ exports.getCampaignCountsOfUser = (req, res) => {
     var chainId = req.body.chainId;
     
     Campaign.find({ creator, chainId}).count().then((data) => { 
-        console.log('[getCampaignCountsOfUser] count = ', data);
         return res.send({ code: 0, data, message:"" });
     }).catch((err) => {
-        return res.send({ code:-1, data:0, message: "Internal server Error" });
-    });
-    
+        return res.send({ code:-1, data:0, message: "" });
+    });    
 }
 
 exports.getCampaignsOfUser = (req, res) => {
@@ -79,7 +77,7 @@ exports.getCampaignsOfUser = (req, res) => {
     Campaign.find({creator, chainId}, function (err, docs) {
         if (err) {
             console.log("Campaign doesn't exisit" + err.message);
-            return res.send({ code: -1, data:{}, message: "Internal server Error" });
+            return res.send({ code: -1, data:{}, message: "" });
         }
         else {
             return res.send({ code:0, data: docs, message: "" });

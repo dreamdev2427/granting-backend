@@ -50,7 +50,7 @@ exports.getAll = (req, res) => {
     })
     .catch((err) => {        
         console.log("Donations doesn't exisit" + err.message);
-        return res.send({ code: -1, data:{}, message: "Internal server Error" });
+        return res.send({ code: -1, data:{}, message: "" });
     })
 }
 
@@ -59,7 +59,7 @@ exports.deleteOne = (req, res) => {
         if (!err)
             return res.send({ code: 0, data:{}, message:"" });
         else
-            return res.send({ code:-1, data:{}, message: "Internal server Error" });
+            return res.send({ code:-1, data:{}, message: "" });
     });
 }
 
@@ -71,7 +71,7 @@ exports.getDonationCountsOfUser = (req, res) => {
         console.log('[getDonationCountsOfUser] count = ', data);
         return res.send({ code: 0, data, message:"" });
     }).catch((err) => {
-        return res.send({ code:-1, data:0, message: "Internal server Error" });
+        return res.send({ code:-1, data:0, message: "" });
     });
 }
 
@@ -82,7 +82,7 @@ exports.getTotalDonatedAmountsOfUser = (req, res) => {
     Donation.find({donor, chainId}, function (err, docs) {
         if (err) {
             console.log("Donations doesn't exisit" + err.message);
-            return res.send({ code: -1, data:{}, message: "Internal server Error" });
+            return res.send({ code: -1, data:{}, message: "" });
         }
         else {
             if(docs.length >0)
@@ -117,6 +117,6 @@ exports.getDonationsOfUser = (req, res) => {
     })
     .catch((err) => {        
         console.log("Donations doesn't exisit" + err.message);
-        return res.send({ code: -1, data:[], message: "Internal server Error" });
+        return res.send({ code: -1, data:[], message: "" });
     })
 }

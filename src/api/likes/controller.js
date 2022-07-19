@@ -39,17 +39,17 @@ exports.setLikes = (req, res) => {
                 );
                // return res.send({ code: 0, data:{}, message: "" });
             } catch (err) {
-                return res.send({ code: -1, data:{}, message: "Internal server Error" });
+                return res.send({ code: -1, data:{}, message: "" });
             }
         }else{            
             newLikes.save().then((data) => {
                 //return res.send({ code: 0, data, message:"" });
             }).catch((err) => {
-                return res.send({ code: -1, data:{}, message: "Internal server Error" });
+                return res.send({ code: -1, data:{}, message: "" });
             });
         }        
     }).catch((err) => {    
-        return res.send({ code: -1, data:{}, message: "Internal server Error" });      
+        return res.send({ code: -1, data:{}, message: "" });      
     })
     
     Campaign.findById(new ObjectId(campaign))
@@ -77,7 +77,7 @@ exports.getAll = (req, res) => {
             return res.send({ code:0, data: docs, message: "" });
     }).catch((err) => {        
         console.log("Likes doesn't exisit" + err.message);
-        return res.send({ code: -1, data:{}, message: "Internal server Error" });   
+        return res.send({ code: -1, data:{}, message: "" });   
     });
 }
 
@@ -101,6 +101,6 @@ exports.getAllLikedCampaigns = (req, res) => {
     })
     .catch((err) => {
         console.log("Likes doesn't exisit" + err.message);
-        return res.send({ code: -1, data:{}, message: "Internal server Error" });
+        return res.send({ code: -1, data:{}, message: "" });
     })
 }
