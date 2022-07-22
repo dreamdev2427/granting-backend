@@ -1,6 +1,23 @@
 const app = require("./app");
-var server = require('http').createServer(app);
+const https = require("https");
+const fs = require("fs");
+// var server = require('http').createServer(app);
+// const port = process.env.PORT || 5000;
+// server.listen(port, () => console.log(`Listening on port ${port}..`));
 
-const port = process.env.PORT || 5000;
+console.log(process.cwd());
+const httpsPort = 443;
+const privateKey = fs.readFileSync("src/cert/private.key");
+const certificate = fs.readFileSync("src/cert/certificate.crt");
+// const ca = fs.readFileSync("config/cert/ca_bundle.crt");
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+//   ca: ca
+}
 
-server.listen(port, () => console.log(`Listening on port ${port}..`));
+https.createServer(credentials, app)
+  .listen(httpsPort, () => {
+    console.log(`[admin.givestation.org] servier is running at port ${httpsPort} as https.`);
+  });
+
