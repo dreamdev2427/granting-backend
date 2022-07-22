@@ -5,7 +5,6 @@ const fs = require("fs");
 // const port = process.env.PORT || 5000;
 // server.listen(port, () => console.log(`Listening on port ${port}..`));
 
-console.log(process.cwd());
 const httpsPort = 443;
 const privateKey = fs.readFileSync("src/cert/private.key");
 const certificate = fs.readFileSync("src/cert/certificate.crt");
