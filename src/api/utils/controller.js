@@ -6,8 +6,6 @@ const env = require("../../../env");
 const upload_path = env.upload_path;
 
 const db = require("../../db");
-const Report = db.Report;
-
 
 exports.makeUploadDir = () => {
   fsPromises.mkdir(process.cwd() + upload_path, { recursive: true }).then(function () {
@@ -43,20 +41,15 @@ exports.uploadFile = (req, res) => {
     // console.log("files.itemFile = ", files.itemFile);      
     var ext = re.exec(files.itemFile.originalFilename)[1];
     let filename = MD5(Date.now().toString()) + "." + ext;
-    var fileSavingPath = "";
-    // console.log("fields.collectionName = ", fields.collectionName);
-    if (fields.collectionName !== undefined) fileSavingPath = fields.collectionName + "/" + filename;
-    else fileSavingPath = filename;
-    // console.log("fileSavingPath = ", fileSavingPath);
-    // console.log("process.cwd() + upload_path + fileSavingPath = ", process.cwd() + upload_path + fileSavingPath);
-    await fs.copyFile(oldpath, process.cwd() + upload_path + fileSavingPath, function (err) {
+    console.log("process.cwd() + upload_path + fileSavingPath = ", process.cwd() + upload_path + filename);
+    await fs.copyFile(oldpath, process.cwd() + upload_path + filename, function (err) {
       fs.unlink(oldpath, () => { });
       if (err) {
         console.log("file uploading failed ");
-        return res.status(401).send({ success: false, message: "Empty file sent!" });
+        return res.send({ code:-1, data: false, message: err.message });
       }
       // console.log("file uploading succeed : ", filename);
-      return res.status(200).send({ success: true, path: fileSavingPath, message: "Successfully Update a Author" });
+      return res.send({ code:0, data: true, path: filename, message: "Successfully Uploaded an image." });
     });
   });
 }
@@ -74,38 +67,21 @@ exports.uploadMultipleFile = async (req, res) => {
       // console.log("saving ", i, "th file...");
       var ext = re.exec(eval("files.fileItem" + i).originalFilename)[1];
       let filename = i.toString() + MD5(Date.now().toString()) + "." + ext;
-      var fileSavingPath = "";
-      if (fields.collectionName !== undefined) fileSavingPath = fields.collectionName + "/" + filename;
-      else fileSavingPath = filename;
-      await fs.copyFile(oldpath, process.cwd() + upload_path + fileSavingPath, function (err) {
+      await fs.copyFile(oldpath, process.cwd() + upload_path + filename, function (err) {
         fs.unlink(oldpath, () => { });
         if (err) {
           console.log("file uploading failed : ", err);
-          // res.status(401).send({ success: false, message: "Empty file sent!" });
+          // res.status(401).send({ data: false, message: "Empty file sent!" });
         }
       });
-      fileNameResultArr[i] = fileSavingPath;
+      fileNameResultArr[i] = filename;
     }
 
     if (i >= fields.fileArryLength) {
       // console.log("Multiple uploading succeed : ", fileNameResultArr);
-      return res.status(200).send({ success: true, paths: fileNameResultArr, message: "Successfully Update a Author" });
+      return res.send({ code: 0, paths: fileNameResultArr, message: "Successfully Uploaded images." });
     }
 
   });
 }
 
-
-exports.report = (req, res) => {
-  const Report = new Report({
-    user_id: req.body.user_id,
-    type: req.body.type,
-    content: req.body.content,
-    target_id: req.body.target_id
-  });
-  Report.save().then(() => {
-    return res.send({ code: 0 });
-  }).catch(() => {
-    return res.send({ code: 1 });
-  });
-}
