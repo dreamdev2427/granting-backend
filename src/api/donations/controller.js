@@ -68,7 +68,6 @@ exports.getDonationCountsOfUser = (req, res) => {
     var chainId = req.body.chainId;
 
     Donation.find({ donor, chainId}).count().then((data) => { 
-        console.log('[getDonationCountsOfUser] count = ', data);
         return res.send({ code: 0, data, message:"" });
     }).catch((err) => {
         return res.send({ code:-1, data:0, message: "" });
