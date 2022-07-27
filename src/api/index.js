@@ -4,13 +4,14 @@ const donations = require('./donations');
 const likes = require("./likes");
 const campaigns = require("./campaigns");
 const nativePrices = require("./nativePrices");
-const checkAuthentication = require('./private_router');
+const utils = require('./utils');
 
 const router = express.Router();
 
-router.use('/donation', checkAuthentication, donations);
-router.use('/likes', checkAuthentication, likes);
+router.use('/donation', donations);
+router.use('/likes', likes);
 router.use("/campaign",  campaigns);
 router.use("/nativePrices",  nativePrices);
+router.use('/utils', utils);
 
 module.exports = router;
