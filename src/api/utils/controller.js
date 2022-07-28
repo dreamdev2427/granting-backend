@@ -41,7 +41,7 @@ exports.uploadFile = (req, res) => {
     // console.log("files.itemFile = ", files.itemFile);      
     var ext = re.exec(files.itemFile.originalFilename)[1];
     let filename = MD5(Date.now().toString()) + "." + ext;
-    console.log("process.cwd() + upload_path + fileSavingPath = ", process.cwd() + upload_path + filename);
+    console.log("Path = ", process.cwd() + upload_path + filename);
     await fs.copyFile(oldpath, process.cwd() + upload_path + filename, function (err) {
       fs.unlink(oldpath, () => { });
       if (err) {
