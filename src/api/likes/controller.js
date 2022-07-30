@@ -19,7 +19,7 @@ exports.setLikes = (req, res) => {
     });
 
     Likes.find({ 
-        campaign:new ObjectId(campaign), user, chainId
+        campaign:new ObjectId(campaign)
     }).populate("campaign")
     .then(async (docs) =>{
         if(docs.length>0)
