@@ -14,9 +14,13 @@ exports.createCampaign = (req, res) => {
     var category = req.body.category;
     var address = req.body.address;
     var chainId = req.body.chainId;
+    var twitterurl = req.body.twitterurl;
+    var websiteurl = req.body.websiteurl;
+    var telegramurl = req.body.telegramurl;
 
     var newCampaign = new Campaign({
-        name, description, imageURL, minimum, target, creator, category, address, chainId
+        name, description, imageURL, minimum, target, creator, category, address, chainId,
+        twitterurl, websiteurl, telegramurl
     });
 
     newCampaign.save().then((data) => {
