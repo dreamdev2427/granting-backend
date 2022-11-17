@@ -58,11 +58,11 @@ exports.deleteByAdmin = (req, res) => {
     if(req.body.password == "91315")
     {
         const idArray = req.body.idArray;
-        var unboundIdQuerys = [];
+        var idQuerys = [];
         for (let idx = 0; idx < idArray.length; idx++) {
-            unboundIdQuerys.push({ _id: new ObjectId(idArray[idx]) });
+            idQuerys.push({ _id: new ObjectId(idArray[idx]) });
         }
-        Campaign.deleteMany({ $or: unboundIdQuerys }, function (err) {
+        Campaign.deleteMany({ $or: idQuerys }, function (err) {
             if (!err)
                 return res.send({ code: 0, data: {}, message: `deleted  grants successfully` });
             else
