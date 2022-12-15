@@ -42,6 +42,16 @@ exports.getAll = (req, res) => {
 });
 }
 
+exports.getCampaignCounts = (req, res) => {
+    Campaign.find({}).count()
+    .then((data) =>  {
+        return res.send({ code:0, data: data, message: "" });
+    })
+    .catch((error) => {
+        return res.send({ code: -1, data:0, message: "" });
+    })
+}
+
 exports.getOne = (req, res) => {
     Campaign.find({_id:req.body._id}, function (err, docs) {
     if (err) {
@@ -62,6 +72,7 @@ exports.deleteByAdmin = (req, res) => {
         for (let idx = 0; idx < idArray.length; idx++) {
             idQuerys.push({ _id: new ObjectId(idArray[idx]) });
         }
+        idQuerys.push({ address: "" });
         Campaign.deleteMany({ $or: idQuerys }, function (err) {
             if (!err)
                 return res.send({ code: 0, data: {}, message: `deleted  grants successfully` });
