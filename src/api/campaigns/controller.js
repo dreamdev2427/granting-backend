@@ -47,6 +47,8 @@ exports.getByLimit = (req, res) => {
     .skip(req.body.skip)
     .limit(req.body.limit)
     .then(docs => {
+        
+        console.log("[getByLimit] data = " , docs);
         return res.send({ code:0, data: docs, message: "" });    
     })
     .catch(error => {
@@ -110,7 +112,7 @@ exports.deleteOne = (req, res) => {
                     console.log("[delete] ", docs.creator, req.body.creator);
                     if(docs.creator.toString() === req.body.creator) 
                     {
-                        Items.findOneAndDelete({ _id: new ObjectId(req.body.campainId) }).then((data) => {
+                        Campaign.findOneAndDelete({ _id: new ObjectId(req.body.campainId) }).then((data) => {
                             return res.send({ code: 0, data: {}, message: "succeed, deleted" });
                         })
                         .catch((err) => {
