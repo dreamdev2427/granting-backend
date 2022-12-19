@@ -42,6 +42,19 @@ exports.getAll = (req, res) => {
 });
 }
 
+exports.getByLimit = (req, res) => {
+    Campaign.find({...req.body})
+    .skip(req.body.skip)
+    .limit(req.body.limit)
+    .then(docs => {
+        return res.send({ code:0, data: docs, message: "" });    
+    })
+    .catch(error => {
+        console.log("Campaign doesn't exisit" + err.message);
+        return res.send({ code: -1, data:{}, message: "" });
+    });
+}
+
 exports.getCampaignCounts = (req, res) => {
     Campaign.find({}).count()
     .then((data) =>  {
