@@ -58,7 +58,7 @@ exports.getByLimit = (req, res) => {
 }
 
 exports.getCampaignCounts = (req, res) => {
-    Campaign.find({}).count()
+    Campaign.find({...req.body}).count()
     .then((data) =>  {
         return res.send({ code:0, data: data, message: "" });
     })
