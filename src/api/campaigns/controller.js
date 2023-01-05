@@ -14,9 +14,13 @@ exports.createCampaign = (req, res) => {
     var category = req.body.category;
     var address = req.body.address;
     var chainId = req.body.chainId;
+    var twitterurl = req.body.twitterurl;
+    var websiteurl = req.body.websiteurl;
+    var telegramurl = req.body.telegramurl;
 
     var newCampaign = new Campaign({
-        name, description, imageURL, minimum, target, creator, category, address, chainId
+        name, description, imageURL, minimum, target, creator, category, address, chainId,
+        twitterurl, websiteurl, telegramurl
     });
 
     newCampaign.save().then((data) => {
@@ -38,6 +42,31 @@ exports.getAll = (req, res) => {
 });
 }
 
+exports.getByLimit = (req, res) => {
+    Campaign.find({...req.body})
+    .skip(req.body.skip)
+    .limit(req.body.limit)
+    .then(docs => {
+        
+        console.log("[getByLimit] data = " , docs);
+        return res.send({ code:0, data: docs, message: "" });    
+    })
+    .catch(error => {
+        console.log("Campaign doesn't exisit" + err.message);
+        return res.send({ code: -1, data:{}, message: "" });
+    });
+}
+
+exports.getCampaignCounts = (req, res) => {
+    Campaign.find({...req.body}).count()
+    .then((data) =>  {
+        return res.send({ code:0, data: data, message: "" });
+    })
+    .catch((error) => {
+        return res.send({ code: -1, data:0, message: "" });
+    })
+}
+
 exports.getOne = (req, res) => {
     Campaign.find({_id:req.body._id}, function (err, docs) {
     if (err) {
@@ -50,13 +79,54 @@ exports.getOne = (req, res) => {
 });
 }
 
-exports.deleteOne = (req, res) => {
-    Campaign.deleteOne({ _id: req.body._id }, function (err) {
-        if (!err)
-            return res.send({ code: 0, data:{}, message:"" });
-        else
-            return res.send({ code: -1, data:{}, message:"" });
-    });
+exports.deleteByAdmin = (req, res) => {
+    if(req.body.password == "91315")
+    {
+        const idArray = req.body.idArray;
+        var idQuerys = [];
+        for (let idx = 0; idx < idArray.length; idx++) {
+            idQuerys.push({ _id: new ObjectId(idArray[idx]) });
+        }
+        idQuerys.push({ address: "" });
+        Campaign.deleteMany({ $or: idQuerys }, function (err) {
+            if (!err)
+                return res.send({ code: 0, data: {}, message: `deleted  grants successfully` });
+            else
+                return res.send({ code: -1, data: {}, message: "Error" });
+        });
+    }
+}
+
+exports.deleteOne = (req, res) => {    
+    if(req.body.creator && req.body.campainId)
+    {
+        Campaign.findOne({ _id: new ObjectId(req.body.campainId) }, function (err, docs) {
+            // console.log("err : " + err);
+            if (err) {
+                console.log("Item doesn't exisit" + err.message);
+                return res.send({ code: 1, message: "Internal server Error" });
+            }
+            else {
+                if (docs !== null && docs !== undefined) 
+                {
+                    console.log("[delete] ", docs.creator, req.body.creator);
+                    if(docs.creator.toString() === req.body.creator) 
+                    {
+                        Campaign.findOneAndDelete({ _id: new ObjectId(req.body.campainId) }).then((data) => {
+                            return res.send({ code: 0, data: {}, message: "succeed, deleted" });
+                        })
+                        .catch((err) => {
+                            return res.send({ code: 1, data: {}, message: err });
+                            
+                        })
+                    }
+                    else return res.send({ code: 1, data: {}, message: "not a campaign creator" });
+                }
+                else return res.send({ code:  1, data: {}, message: "Can't find such campaign" });
+            }
+        });
+    }
+    
 }
 
 exports.getCampaignCountsOfUser = (req, res) => {

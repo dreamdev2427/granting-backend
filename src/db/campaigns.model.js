@@ -8,6 +8,9 @@ module.exports = (mongoose) => {
         imageURL: String,
         creator: String,  //wallet address
         chainId: String,
+        twitterurl: String,
+        websiteurl: String,
+        telegramurl: String,
         minimum: { type: Number, default: 0 },
         target: { type: Number, default: 0 },
         category: { type: String, default: "" },
