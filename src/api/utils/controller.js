@@ -77,7 +77,7 @@ exports.uploadMultipleFile = async (req, res) => {
       fileNameResultArr[i] = filename;
     }
 
-    if (i >= fields.fileArryLength) {
+    if(i >= fields.fileArryLength) {
       // console.log("Multiple uploading succeed : ", fileNameResultArr);
       return res.send({ code: 0, paths: fileNameResultArr, message: "Successfully Uploaded images." });
     }
