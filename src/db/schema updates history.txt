@@ -1,0 +1,5 @@
+date: 20230106
+collection: Campaign,
+updatedField: hide, lock
+newVersion: 2,
+description: add 2 fields "hide" and "lock"
