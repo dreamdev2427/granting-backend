@@ -97,40 +97,74 @@ exports.getByLimit = (req, res) => {
 exports.getTotalCountOfKywordSearchForAdmin = (req, res) => {
     const keyword = req.body.keyword;
 
-    var keywordQuerys = [];
-    keywordQuerys.push({ creator: {$regex: keyword} });
-    keywordQuerys.push({ name: {$regex: keyword } });
-    keywordQuerys.push({ category: {$regex: keyword} });
+    if(keyword !== undefined && keyword !== null && (keyword !== "" || typeof keyword === "Boolean" ||
+        typeof keyword === "Boolean" ))
+    {
+        var keywordQuerys = [];
+        keywordQuerys.push({ creator: {$regex: keyword} });
+        keywordQuerys.push({ name: {$regex: keyword } });
+        keywordQuerys.push({ category: {$regex: keyword} });
+        keywordQuerys.push({ chainId: {$regex: keyword} });
+        if(typeof keyword === "Number") keywordQuerys.push({ raised:  keyword });
+        if(typeof keyword === "Boolean")  keywordQuerys.push({ verified: keyword });
 
-    Campaign.find({ $or: keywordQuerys })
-    .count()
-    .then(docs => {        
-        console.log("[getTotalCountOfKywordSearchForAdmin] data = " , docs);
-        return res.send({ code:0, data: docs, message: "" });    
-    })
-    .catch(error => {
-        return res.send({ code: -1, data:{}, message: error.message });
-    });           
+        Campaign.find({ $or: keywordQuerys })
+        .count()
+        .then(docs => {        
+            console.log("[getTotalCountOfKywordSearchForAdmin] data = " , docs);
+            return res.send({ code:0, data: docs, message: "" });    
+        })
+        .catch(error => {
+            return res.send({ code: -1, data:{}, message: error.message });
+        });           
+    }else{
+        Campaign.find({ })
+        .count()
+        .then(docs => {        
+            console.log("[getTotalCountOfKywordSearchForAdmin] data = " , docs);
+            return res.send({ code:0, data: docs, message: "" });    
+        })
+        .catch(error => {
+            return res.send({ code: -1, data:{}, message: error.message });
+        });           
+    }
 }
 
 exports.getByLimitForAdmin = (req, res) => {
     const keyword = req.body.keyword;
 
-    var keywordQuerys = [];
-    keywordQuerys.push({ name: {$regex: keyword } });
-    keywordQuerys.push({ creator: {$regex: keyword} });
-    keywordQuerys.push({ category: {$regex: keyword} });
+    if(keyword !== undefined && keyword !== null && (keyword !== "" || typeof keyword === "Boolean" ||
+        typeof keyword === "Boolean" ))
+    {
+        var keywordQuerys = [];
+        keywordQuerys.push({ name: {$regex: keyword } });
+        keywordQuerys.push({ creator: {$regex: keyword} });
+        keywordQuerys.push({ category: {$regex: keyword} });
+        if(typeof keyword === "Number") keywordQuerys.push({ raised:  keyword });
+        if(typeof keyword === "Boolean")  keywordQuerys.push({ verified: keyword });
 
-    Campaign.find({ $or: keywordQuerys })
-    .skip(req.body.skip)
-    .limit(req.body.limit)
-    .then(docs => {        
-        console.log("[getByLimitForAdmin] data = " , docs);
-        return res.send({ code:0, data: docs, message: "" });    
-    })
-    .catch(error => {
-        return res.send({ code: -1, data:{}, message: error.message });
-    });           
+        Campaign.find({ $or: keywordQuerys })
+        .skip(req.body.skip)
+        .limit(req.body.limit)
+        .then(docs => {        
+            console.log("[getByLimitForAdmin] data = " , docs);
+            return res.send({ code:0, data: docs, message: "" });    
+        })
+        .catch(error => {
+            return res.send({ code: -1, data:{}, message: error.message });
+        });           
+    }else{
+        Campaign.find({ })
+        .skip(req.body.skip)
+        .limit(req.body.limit)
+        .then(docs => {        
+            console.log("[getByLimitForAdmin] data = " , docs);
+            return res.send({ code:0, data: docs, message: "" });    
+        })
+        .catch(error => {
+            return res.send({ code: -1, data:{}, message: error.message });
+        });          
+    }
 }
 
 exports.getCampaignCounts = (req, res) => {
