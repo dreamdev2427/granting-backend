@@ -51,3 +51,22 @@ exports.getAll = (req, res) => {
         return res.send({ code: -1, data:{}, message: "" });   
     });
 }
+
+exports.isAdmin = (req, res) => {
+    const wallet = req.body.wallet;
+
+    GeneralOptions.find({ 
+        adminWalletHash: md5(wallet)
+    })
+    .then(async (docs) =>{
+        if(docs.length>0)
+        {
+            return res.send({ code:0, data: true, message: "Correct" });
+        }
+        else{
+            return res.send({ code:-1, data: false, message: "Wrong" });
+        }
+    }).catch((err) => {        
+        return res.send({ code: -1, data:{}, message: "" });   
+    });
+}
