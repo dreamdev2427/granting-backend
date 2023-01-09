@@ -13,5 +13,7 @@ router.post('/deleteByAdmin', campaign.deleteByAdmin);
 router.post('/getCampaignCountsOfUser', campaign.getCampaignCountsOfUser);
 router.post('/getCampaignsOfUser', campaign.getCampaignsOfUser);
 router.post('/update', campaign.update);
+router.post('/getByLimitForAdmin', campaign.getByLimitForAdmin);
+router.post('/getTotalCountOfKywordSearchForAdmin', campaign.getTotalCountOfKywordSearchForAdmin);
 
 module.exports = router;

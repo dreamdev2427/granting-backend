@@ -94,25 +94,43 @@ exports.getByLimit = (req, res) => {
     
 }
 
+exports.getTotalCountOfKywordSearchForAdmin = (req, res) => {
+    const keyword = req.body.keyword;
+
+    var keywordQuerys = [];
+    keywordQuerys.push({ creator: {$regex: keyword} });
+    keywordQuerys.push({ name: {$regex: keyword } });
+    keywordQuerys.push({ category: {$regex: keyword} });
+
+    Campaign.find({ $or: keywordQuerys })
+    .count()
+    .then(docs => {        
+        console.log("[getTotalCountOfKywordSearchForAdmin] data = " , docs);
+        return res.send({ code:0, data: docs, message: "" });    
+    })
+    .catch(error => {
+        return res.send({ code: -1, data:{}, message: error.message });
+    });           
+}
 
 exports.getByLimitForAdmin = (req, res) => {
     const keyword = req.body.keyword;
 
-    //name, description, creator, category, address, twitterurl, websiteurl, telegramurl
-    
-    Campaign.find({...req.body})
+    var keywordQuerys = [];
+    keywordQuerys.push({ name: {$regex: keyword } });
+    keywordQuerys.push({ creator: {$regex: keyword} });
+    keywordQuerys.push({ category: {$regex: keyword} });
+
+    Campaign.find({ $or: keywordQuerys })
     .skip(req.body.skip)
     .limit(req.body.limit)
-    .then(docs => {
-        
+    .then(docs => {        
         console.log("[getByLimitForAdmin] data = " , docs);
         return res.send({ code:0, data: docs, message: "" });    
     })
     .catch(error => {
-        console.log("Campaign doesn't exisit" + err.message);
-        return res.send({ code: -1, data:{}, message: "" });
-    });       
-    
+        return res.send({ code: -1, data:{}, message: error.message });
+    });           
 }
 
 exports.getCampaignCounts = (req, res) => {

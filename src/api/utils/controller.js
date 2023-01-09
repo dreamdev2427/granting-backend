@@ -39,7 +39,7 @@ exports.uploadFile = (req, res) => {
   form.parse(req, async function (error, fields, files) {
     var oldpath = files?.itemFile?.filepath || undefined;
     // console.log("files.itemFile = ", files.itemFile);      
-    if(oldpath === undefined) return res.send({ code:-1, data: false, message: err.message });
+    if(oldpath === undefined) return res.send({ code:-1, data: false, message: "Invalid path" });
     var ext = re.exec(files.itemFile.originalFilename)[1];
     let filename = MD5(Date.now().toString()) + "." + ext;
     console.log("Path = ", process.cwd() + upload_path + filename);
