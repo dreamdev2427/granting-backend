@@ -26,7 +26,7 @@ exports.createCampaign = (req, res) => {
 
     GeneralOptions.find({})
     .then((docs) => {
-        if(docs.length>1 && docs[0].allowGrantCreation === true)
+        if(docs[0].allowGrantCreation === true)
         {            
             newCampaign.save().then((data) => {
                 return res.send({ code: 0, data, message:"" });
@@ -43,30 +43,55 @@ exports.createCampaign = (req, res) => {
 }
 
 exports.getAll = (req, res) => {
-    Campaign.find({...req.body}, function (err, docs) {
-    if (err) {
-        console.log("Campaign doesn't exisit" + err.message);
-        return res.send({ code: -1, data:{}, message: "" });
-    }
-    else {        
-        return res.send({ code:0, data: docs, message: "" });
-    }
-});
+    GeneralOptions.find({})
+    .then((data) => {
+        if(data[0].showAllGrants === true)
+        {            
+            Campaign.find({...req.body}, function (err, docs) {
+                if (err) {
+                    console.log("Campaign doesn't exisit" + err.message);
+                    return res.send({ code: -1, data:{}, message: "" });
+                }
+                else {        
+                    return res.send({ code:0, data: docs, message: "" });
+                }
+            });
+        }else{           
+            return res.send({ code: 101, data: [], message: "All grants are hidden by admin." });
+        }
+    })
+    .catch(error => {
+        return res.send({ code: -1, data: null, message: "" });
+    });
 }
 
 exports.getByLimit = (req, res) => {
-    Campaign.find({...req.body})
-    .skip(req.body.skip)
-    .limit(req.body.limit)
-    .then(docs => {
-        
-        console.log("[getByLimit] data = " , docs);
-        return res.send({ code:0, data: docs, message: "" });    
+    
+    GeneralOptions.find({})
+    .then((data) => {
+        console.log(data[0])
+        if(data[0].showAllGrants === true)
+        {            
+            Campaign.find({...req.body})
+            .skip(req.body.skip)
+            .limit(req.body.limit)
+            .then(docs => {
+                
+                console.log("[getByLimit] data = " , docs);
+                return res.send({ code:0, data: docs, message: "" });    
+            })
+            .catch(error => {
+                console.log("Campaign doesn't exisit" + err.message);
+                return res.send({ code: -1, data:{}, message: "" });
+            });
+        }else{           
+            return res.send({ code: 101, data: [], message: "All grants are hidden by admin." });
+        }
     })
     .catch(error => {
-        console.log("Campaign doesn't exisit" + err.message);
-        return res.send({ code: -1, data:{}, message: "" });
+        return res.send({ code: -1, data: null, message: "" });
     });
+    
 }
 
 exports.getCampaignCounts = (req, res) => {
@@ -80,15 +105,29 @@ exports.getCampaignCounts = (req, res) => {
 }
 
 exports.getOne = (req, res) => {
-    Campaign.find({_id:req.body._id}, function (err, docs) {
-    if (err) {
-        console.log("Campaign doesn't exisit" + err.message);
-        return res.send({ code: -1, data:{}, message: "" });
-    }
-    else {        
-        return res.send({ code:0, data: docs, message: "" });
-    }
-});
+    
+    GeneralOptions.find({})
+    .then((data) => {
+        console.log(data[0])
+        if(data[0].showAllGrants === true)
+        {            
+            Campaign.find({_id:req.body._id}, function (err, docs) {
+                if (err) {
+                    console.log("Campaign doesn't exisit" + err.message);
+                    return res.send({ code: -1, data:{}, message: "" });
+                }
+                else {        
+                    return res.send({ code:0, data: docs, message: "" });
+                }
+            });
+        }else{           
+            return res.send({ code: 101, data: [], message: "All grants are hidden by admin." });
+        }
+    })
+    .catch(error => {
+        return res.send({ code: -1, data: null, message: "" });
+    });
+   
 }
 
 exports.deleteByAdmin = (req, res) => {
@@ -155,15 +194,27 @@ exports.getCampaignCountsOfUser = (req, res) => {
 exports.getCampaignsOfUser = (req, res) => {
     var creator = req.body.user;
     var chainId = req.body.chainId;
-
-    Campaign.find({creator, chainId}, function (err, docs) {
-        if (err) {
-            console.log("Campaign doesn't exisit" + err.message);
-            return res.send({ code: -1, data:{}, message: "" });
+    
+    GeneralOptions.find({})
+    .then((data) => {
+        console.log(data[0])
+        if(data[0].showAllGrants === true)
+        {            
+            Campaign.find({creator, chainId}, function (err, docs) {
+                if (err) {
+                    console.log("Campaign doesn't exisit" + err.message);
+                    return res.send({ code: -1, data:{}, message: "" });
+                }
+                else {
+                    return res.send({ code:0, data: docs, message: "" });
+                }
+            });
+        }else{           
+            return res.send({ code: 101, data: [], message: "All grants are hidden by admin." });
         }
-        else {
-            return res.send({ code:0, data: docs, message: "" });
-        }
+    })
+    .catch(error => {
+        return res.send({ code: -1, data: null, message: "" });
     });
 }
 
