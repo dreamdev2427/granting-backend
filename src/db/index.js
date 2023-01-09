@@ -9,5 +9,6 @@ db.Likes = require("./likes.model")(mongoose);
 db.Donation = require("./donations.model")(mongoose);
 db.Campaign = require("./campaigns.model")(mongoose);
 db.NativePrice = require("./nativePrices.model")(mongoose);
+db.GeneralOptions = require("./generalOptions.model")(mongoose);
 
 module.exports = db;
