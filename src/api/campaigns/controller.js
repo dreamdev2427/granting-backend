@@ -132,6 +132,8 @@ exports.getTotalCountOfKywordSearchForAdmin = (req, res) => {
 
 exports.getByLimitForAdmin = (req, res) => {
     const keyword = req.body.keyword;
+    const limitPerPage = req.body.limit;
+    const pageIndex = req.body.skip;
 
     if(keyword !== undefined && keyword !== null && (keyword !== "" || typeof keyword === "Boolean" ||
         typeof keyword === "Boolean" ))
@@ -144,8 +146,8 @@ exports.getByLimitForAdmin = (req, res) => {
         if(typeof keyword === "Boolean")  keywordQuerys.push({ verified: keyword });
 
         Campaign.find({ $or: keywordQuerys })
-        .skip(req.body.skip)
-        .limit(req.body.limit)
+        .skip((limitPerPage>0 && pageIndex>0)? limitPerPage * pageIndex : 0)
+        .limit(	(limitPerPage && limitPerPage>0) ? limitPerPage : 5)
         .then(docs => {        
             console.log("[getByLimitForAdmin] data = " , docs);
             return res.send({ code:0, data: docs, message: "" });    
@@ -155,8 +157,8 @@ exports.getByLimitForAdmin = (req, res) => {
         });           
     }else{
         Campaign.find({ })
-        .skip(req.body.skip)
-        .limit(req.body.limit)
+        .skip((limitPerPage>0 && pageIndex>0)? limitPerPage * pageIndex : 0)
+        .limit(	(limitPerPage && limitPerPage>0) ? limitPerPage : 5)
         .then(docs => {        
             console.log("[getByLimitForAdmin] data = " , docs);
             return res.send({ code:0, data: docs, message: "" });    
