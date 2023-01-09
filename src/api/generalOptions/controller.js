@@ -55,18 +55,65 @@ exports.getAll = (req, res) => {
 exports.isAdmin = (req, res) => {
     const wallet = req.body.wallet;
 
-    GeneralOptions.find({ 
-        adminWalletHash: md5(wallet)
-    })
-    .then(async (docs) =>{
-        if(docs.length>0)
-        {
-            return res.send({ code:0, data: true, message: "Correct" });
-        }
-        else{
-            return res.send({ code:-1, data: false, message: "Wrong" });
-        }
-    }).catch((err) => {        
-        return res.send({ code: -1, data:{}, message: "" });   
-    });
+    if(wallet !== null && wallet !== "" && wallet !== undefined && String(wallet).includes("0x") === true)
+    {
+        GeneralOptions.find({ 
+            adminWalletHash: md5(wallet)
+        })
+        .then(async (docs) =>{
+            if(docs.length>0)
+            {
+                return res.send({ code:0, data: true, message: "Correct" });
+            }
+            else{
+                return res.send({ code:-1, data: false, message: "Wrong" });
+            }
+        }).catch((err) => {        
+            return res.send({ code: -1, data:{}, message: "" });   
+        });
+    }else{
+        return res.send({ code:-1, data: false, message: "Invalid wallet" });
+    }
+}
+
+
+exports.setNewWallet = async (req, res) => {
+    var wallet = req.body.wallet;
+    var newWallet = req.body.newWallet;
+
+    if(wallet !== null && wallet !== "" && wallet !== undefined && String(wallet).includes("0x") === true && 
+    newWallet !== null && newWallet !== "" && newWallet !== undefined && String(newWallet).includes("0x") === true)
+    {
+        await GeneralOptions.find({ 
+            adminWalletHash: md5(wallet)
+        })
+        .then(async (docs) =>{
+            if(docs.length>0)
+            {
+                try {
+                    await GeneralOptions.updateOne(
+                        {_id: docs[0]._id},
+                        {
+                            $set: {
+                                adminWalletHash: md5(newWallet)
+                            },
+                            $currentDate: {
+                                ends: true,
+                            }
+                        },
+                        { upsert: true }
+                    );
+                return res.send({ code: 0, data:{}, message: "Succssfuly updated options." });
+                } catch (err) {
+                    return res.send({ code: -1, data:{}, message:"Sever side error." });
+                }
+            }else{         
+                return res.send({ code: -1, data:{}, message: "You are not the administrator." });
+            }        
+        }).catch((err) => {    
+            return res.send({ code: -1, data:{}, message: err });      
+        })
+    }else{
+        return res.send({ code:-1, data: false, message: "Invalid wallet" });
+    }
 }
