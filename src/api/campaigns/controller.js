@@ -1,6 +1,7 @@
 const db = require("../../db");
 
 const Campaign = db.Campaign;
+const GeneralOptions = db.GeneralOptions;
 
 var ObjectId = require('mongodb').ObjectID;
 
@@ -23,10 +24,21 @@ exports.createCampaign = (req, res) => {
         twitterurl, websiteurl, telegramurl
     });
 
-    newCampaign.save().then((data) => {
-        return res.send({ code: 0, data, message:"" });
-    }).catch((err) => {
-        return res.send({ code: -1, data, message: "" });
+    GeneralOptions.find({})
+    .then((docs) => {
+        if(docs.length>1 && docs[0].allowGrantCreation === true)
+        {            
+            newCampaign.save().then((data) => {
+                return res.send({ code: 0, data, message:"" });
+            }).catch((err) => {
+                return res.send({ code: -1, data: null, message: "" });
+            });
+        }else{           
+            return res.send({ code: 101, data: null, message: "Grant creation is disabled by admin." });
+        }
+    })
+    .catch(error => {
+        return res.send({ code: -1, data: null, message: "" });
     });
 }
 
