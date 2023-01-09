@@ -5,10 +5,12 @@ const GeneralOptions = db.GeneralOptions;
 
 var ObjectId = require('mongodb').ObjectID;
 
-exports.setGeneralOptions = (req, res) => {
+exports.setGeneralOptions = async (req, res) => {
     var wallet = req.body.wallet;
-
-    GeneralOptions.find({ 
+    var showAllGrants = req.body.showAllGrants;
+    var allowGrantCreation = req.body.allowGrantCreation;
+    
+    await GeneralOptions.find({ 
         adminWalletHash: md5(wallet)
     })
     .then(async (docs) =>{
@@ -27,7 +29,7 @@ exports.setGeneralOptions = (req, res) => {
                     },
                     { upsert: true }
                 );
-               // return res.send({ code: 0, data:{}, message: "" });
+               return res.send({ code: 0, data:{}, message: "Updated" });
             } catch (err) {
                 return res.send({ code: -1, data:{}, message: "" });
             }
