@@ -29,12 +29,12 @@ exports.setGeneralOptions = async (req, res) => {
                     },
                     { upsert: true }
                 );
-               return res.send({ code: 0, data:{}, message: "Updated" });
+               return res.send({ code: 0, data:{}, message: "Succssfuly updated options." });
             } catch (err) {
-                return res.send({ code: -1, data:{}, message: "" });
+                return res.send({ code: -1, data:{}, message:"Sever side error." });
             }
         }else{         
-            return res.send({ code: -1, data:{}, message: "Can not fine default data." });
+            return res.send({ code: -1, data:{}, message: "You are not the administrator." });
         }        
     }).catch((err) => {    
         return res.send({ code: -1, data:{}, message: err });      
