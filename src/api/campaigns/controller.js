@@ -1,3 +1,4 @@
+const md5 = require("md5");
 const db = require("../../db");
 
 const Campaign = db.Campaign;
@@ -69,7 +70,6 @@ exports.getByLimit = (req, res) => {
     
     GeneralOptions.find({})
     .then((data) => {
-        console.log(data[0])
         if(data[0].showAllGrants === true)
         {            
             Campaign.find({...req.body})
@@ -91,6 +91,27 @@ exports.getByLimit = (req, res) => {
     .catch(error => {
         return res.send({ code: -1, data: null, message: "" });
     });
+    
+}
+
+
+exports.getByLimitForAdmin = (req, res) => {
+    const keyword = req.body.keyword;
+
+    //name, description, creator, category, address, twitterurl, websiteurl, telegramurl
+    
+    Campaign.find({...req.body})
+    .skip(req.body.skip)
+    .limit(req.body.limit)
+    .then(docs => {
+        
+        console.log("[getByLimitForAdmin] data = " , docs);
+        return res.send({ code:0, data: docs, message: "" });    
+    })
+    .catch(error => {
+        console.log("Campaign doesn't exisit" + err.message);
+        return res.send({ code: -1, data:{}, message: "" });
+    });       
     
 }
 
