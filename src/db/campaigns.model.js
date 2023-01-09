@@ -17,7 +17,10 @@ module.exports = (mongoose) => {
         address: String,
         verified: { type: Boolean, default: false },
         raised: { type: Number, default: 0 },
-        likes: { type: Number, default: 0 }
+        likes: { type: Number, default: 0 },
+        hide: { type: Boolean, default: false },
+        lock: { type: Boolean, default: false },
+        schema_version: { type: String, default: "2" }
       },
       { timestamps: true }
     )
