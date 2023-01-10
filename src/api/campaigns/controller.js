@@ -48,7 +48,7 @@ exports.getAll = (req, res) => {
     .then((data) => {
         if(data[0].showAllGrants === true)
         {            
-            Campaign.find({...req.body}, function (err, docs) {
+            Campaign.find({...req.body, hide: false }, function (err, docs) {
                 if (err) {
                     console.log("Campaign doesn't exisit" + err.message);
                     return res.send({ code: -1, data:{}, message: "" });
@@ -68,11 +68,11 @@ exports.getAll = (req, res) => {
 
 exports.getByLimit = (req, res) => {
     
-    GeneralOptions.find({})
+    GeneralOptions.find({ hide: false })
     .then((data) => {
         if(data[0].showAllGrants === true)
         {            
-            Campaign.find({...req.body})
+            Campaign.find({...req.body, hide: false })
             .skip(req.body.skip)
             .limit(req.body.limit)
             .then(docs => {
@@ -170,7 +170,7 @@ exports.getByLimitForAdmin = (req, res) => {
 }
 
 exports.getCampaignCounts = (req, res) => {
-    Campaign.find({...req.body}).count()
+    Campaign.find({...req.body, hide:false}).count()
     .then((data) =>  {
         return res.send({ code:0, data: data, message: "" });
     })
@@ -186,7 +186,7 @@ exports.getOne = (req, res) => {
         console.log(data[0])
         if(data[0].showAllGrants === true)
         {            
-            Campaign.find({_id:req.body._id}, function (err, docs) {
+            Campaign.find({_id:req.body._id, hide:false }, function (err, docs) {
                 if (err) {
                     console.log("Campaign doesn't exisit" + err.message);
                     return res.send({ code: -1, data:{}, message: "" });
@@ -259,7 +259,7 @@ exports.getCampaignCountsOfUser = (req, res) => {
     var creator = req.body.user;
     var chainId = req.body.chainId;
     
-    Campaign.find({ creator, chainId}).count().then((data) => { 
+    Campaign.find({ creator, chainId, hide:false}).count().then((data) => { 
         return res.send({ code: 0, data, message:"" });
     }).catch((err) => {
         return res.send({ code:-1, data:0, message: "" });
@@ -275,7 +275,7 @@ exports.getCampaignsOfUser = (req, res) => {
         console.log(data[0])
         if(data[0].showAllGrants === true)
         {            
-            Campaign.find({creator, chainId}, function (err, docs) {
+            Campaign.find({creator, chainId, hide: false}, function (err, docs) {
                 if (err) {
                     console.log("Campaign doesn't exisit" + err.message);
                     return res.send({ code: -1, data:{}, message: "" });
