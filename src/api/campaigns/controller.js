@@ -69,15 +69,16 @@ exports.getAll = (req, res) => {
 
 exports.getStatisticPerChain = (req,res) => {
     
-	Campaign.aggregate([        
+	Campaign.aggregate([ 
         {
-            $match: {
-                "chainId" :{
-                    $eq: req.body.chainId
-                }
-            }
-        },
-		{$group: {_id:"$creator", count:{$sum:1}}},			
+            $project:
+               {
+                creator: 1,
+                 chainId: 1,
+               }
+        },              
+        { $match : { chainId : (req.body.chainId).toString() } } ,
+		{$group: {_id:"$creator", count:{$sum:1}}},	
 		{
 			$sort: {
 				count: -1
@@ -85,7 +86,7 @@ exports.getStatisticPerChain = (req,res) => {
 		}
 	])
 	.then((docs) => {
-        return res.send({ code:0, data: docs, message: "" });
+        return res.send(docs);
     })
     .catch((error) => {
         return res.send({ code: -1, data:[], message: "" });

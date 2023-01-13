@@ -125,12 +125,14 @@ exports.getStatisticPerChain = (req,res) => {
     
 	Donation.aggregate([        
         {
-            $match: {
-                "chainId" :{
-                    $eq: req.body.chainId
-                }
-            }
-        },
+            $project:
+               {
+                    donor: 1,
+                 chainId: 1,
+                 amount: 1,
+               }
+        },              
+        { $match : { chainId : (req.body.chainId).toString() } } ,
 		{$group: {_id:"$donor", amount:{$sum:"$amount"}}},			
 		{
 			$sort: {
@@ -139,7 +141,7 @@ exports.getStatisticPerChain = (req,res) => {
 		}
 	])
 	.then((docs) => {
-        return res.send({ code:0, data: docs, message: "" });
+        return res.send( docs);
     })
     .catch((error) => {
         return res.send({ code: -1, data:[], message: "" });
