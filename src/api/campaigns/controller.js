@@ -66,6 +66,32 @@ exports.getAll = (req, res) => {
     });
 }
 
+
+exports.getStatisticPerChain = (req,res) => {
+    
+	Campaign.aggregate([        
+        {
+            $match: {
+                "chainId" :{
+                    $eq: req.body.chainId
+                }
+            }
+        },
+		{$group: {_id:"$creator", count:{$sum:1}}},			
+		{
+			$sort: {
+				count: -1
+			}
+		}
+	])
+	.then((docs) => {
+        return res.send({ code:0, data: docs, message: "" });
+    })
+    .catch((error) => {
+        return res.send({ code: -1, data:[], message: "" });
+    });
+}
+
 exports.getByLimit = (req, res) => {
     
     GeneralOptions.find({ hide: false })

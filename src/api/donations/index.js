@@ -8,5 +8,6 @@ router.post('/delete', donation.deleteOne);
 router.post('/getDonationCountsOfUser', donation.getDonationCountsOfUser);
 router.post('/getTotalDonatedAmountsOfUser', donation.getTotalDonatedAmountsOfUser);
 router.post('/getDonationsOfUser', donation.getDonationsOfUser);
+router.post('/getStatisticPerChain', donation.getStatisticPerChain);
 
 module.exports = router;

@@ -15,5 +15,6 @@ router.post('/getCampaignsOfUser', campaign.getCampaignsOfUser);
 router.post('/update', campaign.update);
 router.post('/getByLimitForAdmin', campaign.getByLimitForAdmin);
 router.post('/getTotalCountOfKywordSearchForAdmin', campaign.getTotalCountOfKywordSearchForAdmin);
+router.post('/getStatisticPerChain', campaign.getStatisticPerChain);
 
 module.exports = router;

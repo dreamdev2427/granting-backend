@@ -119,3 +119,29 @@ exports.getDonationsOfUser = (req, res) => {
         return res.send({ code: -1, data:[], message: "" });
     })
 }
+
+
+exports.getStatisticPerChain = (req,res) => {
+    
+	Donation.aggregate([        
+        {
+            $match: {
+                "chainId" :{
+                    $eq: req.body.chainId
+                }
+            }
+        },
+		{$group: {_id:"$donor", amount:{$sum:"$amount"}}},			
+		{
+			$sort: {
+				amount: -1
+			}
+		}
+	])
+	.then((docs) => {
+        return res.send({ code:0, data: docs, message: "" });
+    })
+    .catch((error) => {
+        return res.send({ code: -1, data:[], message: "" });
+    });
+}
