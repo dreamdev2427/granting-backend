@@ -5,6 +5,9 @@ const upload_path = "/public/uploads/";
 const mainnet_http_RPC = "https://api.avax.network/ext/bc/C/rpc";
 const testnet_http_RPC =  "https://data-seed-prebsc-1-s2.binance.org:8545/";  //"https://api.avax-test.network/ext/bc/C/rpc";
 
+
+
+
 module.exports  =  { 
 	jwt_enc_key, 
 	admin_address,
