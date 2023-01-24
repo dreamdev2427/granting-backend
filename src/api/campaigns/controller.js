@@ -244,9 +244,14 @@ exports.deleteByAdmin = (req, res) => {
         var idQuerys = [];
         for (let idx = 0; idx < idArray.length; idx++) {
             idQuerys.push({ _id: new ObjectId(idArray[idx]) });
-        }
+        } 
         idQuerys.push({ address: "" });
         Campaign.deleteMany({ $or: idQuerys }, function (err) {
+        // Campaign.deleteMany(
+        //     { raised: 0, $or: [
+        //         { chainId: "97" }, {chainId: "80001"}
+        //     ] }
+        // , function (err) {
             if (!err)
                 return res.send({ code: 0, data: {}, message: `deleted  grants successfully` });
             else
