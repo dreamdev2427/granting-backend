@@ -21,6 +21,7 @@
     "express": "^4.17.3",
     "formidable": "^2.0.1",
     "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
     "https": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
     "md5": "^2.3.0",
