@@ -7,7 +7,6 @@ const Donation = db.Donation;
 const Campaign = db.Campaign;
 const web3WS1 = new Web3(ETHEREUM_MAINNET_RPC);
 const uniswapV2Rounter = new web3WS1.eth.Contract(v2RouterABI, UINISWAP_V2_ROUTER_ADDRESS);
-var ethereumUsdPrice = 0;
 
 var ObjectId = require('mongodb').ObjectID;
 
@@ -18,7 +17,7 @@ exports.createDonation = async (req, res) => {
     var chainId = req.body.chainId;
     let rewardOPAmount = 0;
 
-    if(chainId === "0xa" || chainId == 10)
+    if(chainId === "0xa" || chainId == 10 || chainId === "a")
     {
 		try{
 				const weiAmount = web3WS1.utils.toWei(amount.toString(), "ether").toString();
