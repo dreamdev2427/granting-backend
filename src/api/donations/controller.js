@@ -1,7 +1,13 @@
 const db = require("../../db");
+const axios = require("axios");
+const Web3 = require("web3");
+const { USD_OP_RERARD_PERCENTAGE } = require("../../../env");
 
 const Donation = db.Donation;
 const Campaign = db.Campaign;
+const OPTIMISIM_NETWORK_RPC = "https://mainnet.optimism.io";
+var web3WS1 = new Web3(OPTIMISIM_NETWORK_RPC);
+var ethereumUsdPrice = 0;
 
 var ObjectId = require('mongodb').ObjectID;
 
@@ -10,12 +16,49 @@ exports.createDonation = (req, res) => {
     var amount = req.body.amount;
     var donor = req.body.donor;
     var chainId = req.body.chainId;
+    let rewardOPAmount = 0;
+
+    if(chainId === "0xa" || chainId == 10)
+    {
+        // Donate $3 - 5 to get 0.2 OP Tokens
+        // Donate $5 - 10 to get 0.9 OP Tokens
+        // Donate $10 - 50 to get 5 OP Tokens
+		try{
+				// const realAmount = Number(web3WS1.utils.fromWei(nativeValue.toSting(), "ether").toString());
+                const usdAmount = amount * ethereumUsdPrice;
+                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[0].min && usdAmount < USD_OP_RERARD_PERCENTAGE[0].max)
+                {
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[0].reward
+                }
+                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[1].min && usdAmount < USD_OP_RERARD_PERCENTAGE[1].max)
+                {
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[1].reward
+                }
+                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[2].min && usdAmount < USD_OP_RERARD_PERCENTAGE[2].max)
+                {
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[2].reward
+                }
+                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[3].min && usdAmount < USD_OP_RERARD_PERCENTAGE[3].max)
+                {
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[3].reward
+                }
+                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[4].min)
+                {
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[4].reward
+                }                
+            }catch(error)
+            {
+                console.log(error);
+            }
+    }
+
 
     var newDonation = new Donation({
         campaign: new ObjectId(campaign),
         amount,
         donor,
-        chainId
+        chainId,
+        opReward: rewardOPAmount
     });
 
     newDonation.save().then((data) => {
@@ -151,3 +194,18 @@ exports.getStatisticPerChain = (req,res) => {
         return res.send({ code: -1, data:[], message: "" });
     });
 }
+
+
+const priceFetching_loop = () => {
+  setIntervalAsync(async () => {
+    try {
+      let binanceResponse = await axios.get("https://api.binance.com/api/v3/ticker/price?symbols=%5B%22ETHUSDT%22%5D");
+      currentPrices = binanceResponse?.data ? binanceResponse.data : [];
+      ethereumUsdPrice =
+        currentPrices.find((item) => item.symbol === "ETHUSDT")?.price || 0;
+
+    } catch (error) {}
+  }, 3000);
+};
+
+priceFetching_loop();

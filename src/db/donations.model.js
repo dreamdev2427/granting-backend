@@ -10,7 +10,11 @@ module.exports = (mongoose) => {
                 },
                 donor: String,  //wallet address
                 amount: Number, 
-                chainId: String
+                chainId: String, 
+                opReward: {
+                    type: Number,
+                    default: 0
+                }
             },
             { timestamps: true }
         )
