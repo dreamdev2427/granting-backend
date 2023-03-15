@@ -1,17 +1,17 @@
 const db = require("../../db");
-const axios = require("axios");
 const Web3 = require("web3");
-const { USD_OP_RERARD_PERCENTAGE } = require("../../../env");
+const { USD_OP_RERARD_PERCENTAGE, ETHEREUM_MAINNET_RPC, WETH_ADDRESS_ON_ETHEREUM, USDT_ADDRESS_ON_ETHEREUM, UINISWAP_V2_ROUTER_ADDRESS } = require("../../../env");
+const v2RouterABI = require("../../abis/uniswapv2router.json");
 
 const Donation = db.Donation;
 const Campaign = db.Campaign;
-const OPTIMISIM_NETWORK_RPC = "https://mainnet.optimism.io";
-var web3WS1 = new Web3(OPTIMISIM_NETWORK_RPC);
+const web3WS1 = new Web3(ETHEREUM_MAINNET_RPC);
+const uniswapV2Rounter = new web3WS1.eth.Contract(v2RouterABI, UINISWAP_V2_ROUTER_ADDRESS);
 var ethereumUsdPrice = 0;
 
 var ObjectId = require('mongodb').ObjectID;
 
-exports.createDonation = (req, res) => {
+exports.createDonation = async (req, res) => {
     var campaign = req.body.campaign;
     var amount = req.body.amount;
     var donor = req.body.donor;
@@ -20,38 +20,36 @@ exports.createDonation = (req, res) => {
 
     if(chainId === "0xa" || chainId == 10)
     {
-        // Donate $3 - 5 to get 0.2 OP Tokens
-        // Donate $5 - 10 to get 0.9 OP Tokens
-        // Donate $10 - 50 to get 5 OP Tokens
 		try{
-				// const realAmount = Number(web3WS1.utils.fromWei(nativeValue.toSting(), "ether").toString());
-                const usdAmount = amount * ethereumUsdPrice;
+				const weiAmount = web3WS1.utils.toWei(amount.toString(), "ether").toString();
+                const usdMweiAmount = await uniswapV2Rounter.methods.getAmountsOut(weiAmount, [WETH_ADDRESS_ON_ETHEREUM,USDT_ADDRESS_ON_ETHEREUM]).call();                
+                const usdAmount = Number(web3WS1.utils.fromWei(usdMweiAmount.toString(), "mwei").toString());
+                console.log(`ETH : ${amount} ===> USD ${usdAmount}`);
                 if(usdAmount >= USD_OP_RERARD_PERCENTAGE[0].min && usdAmount < USD_OP_RERARD_PERCENTAGE[0].max)
                 {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[0].reward
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[0].reward;
                 }
                 if(usdAmount >= USD_OP_RERARD_PERCENTAGE[1].min && usdAmount < USD_OP_RERARD_PERCENTAGE[1].max)
                 {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[1].reward
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[1].reward;
                 }
                 if(usdAmount >= USD_OP_RERARD_PERCENTAGE[2].min && usdAmount < USD_OP_RERARD_PERCENTAGE[2].max)
                 {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[2].reward
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[2].reward;
                 }
                 if(usdAmount >= USD_OP_RERARD_PERCENTAGE[3].min && usdAmount < USD_OP_RERARD_PERCENTAGE[3].max)
                 {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[3].reward
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[3].reward;
                 }
                 if(usdAmount >= USD_OP_RERARD_PERCENTAGE[4].min)
                 {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[4].reward
+                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[4].reward;
                 }                
             }catch(error)
             {
                 console.log(error);
             }
     }
-
 
     var newDonation = new Donation({
         campaign: new ObjectId(campaign),
@@ -129,12 +127,13 @@ exports.getTotalDonatedAmountsOfUser = (req, res) => {
         else {
             if(docs.length >0)
             {
-                let sum = 0;
+                let sum = 0, sumOPs = 0;
                 for(let idx = 0; idx < docs.length; idx++)
                 {
                     sum += Number(docs[idx].amount);
+                    sumOPs += Number(docs[idx]?.opReward || 0);
                 }
-                return res.send({ code:0, data: sum, message: "" });
+                return res.send({ code:0, data: sum, sumOPs: sumOPs, message: "" });
             }
             else {
                 return res.send({ code:0, data: 0, message: "" });
@@ -194,18 +193,3 @@ exports.getStatisticPerChain = (req,res) => {
         return res.send({ code: -1, data:[], message: "" });
     });
 }
-
-
-const priceFetching_loop = () => {
-  setIntervalAsync(async () => {
-    try {
-      let binanceResponse = await axios.get("https://api.binance.com/api/v3/ticker/price?symbols=%5B%22ETHUSDT%22%5D");
-      currentPrices = binanceResponse?.data ? binanceResponse.data : [];
-      ethereumUsdPrice =
-        currentPrices.find((item) => item.symbol === "ETHUSDT")?.price || 0;
-
-    } catch (error) {}
-  }, 3000);
-};
-
-priceFetching_loop();

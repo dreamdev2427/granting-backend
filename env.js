@@ -6,6 +6,10 @@ const signIn_break_timeout =  24*60*60;   //24*60*60 equals with 24 hours
 const upload_path = "/public/uploads/";
 const mainnet_http_RPC = "https://api.avax.network/ext/bc/C/rpc";
 const testnet_http_RPC =  "https://data-seed-prebsc-1-s2.binance.org:8545/";  //"https://api.avax-test.network/ext/bc/C/rpc";
+const UINISWAP_V2_ROUTER_ADDRESS = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
+const ETHEREUM_MAINNET_RPC = "https://ethereum.publicnode.com";
+const WETH_ADDRESS_ON_ETHEREUM = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const USDT_ADDRESS_ON_ETHEREUM = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
 const USD_OP_RERARD_PERCENTAGE = [
 	{
 		min: 3,
@@ -33,6 +37,10 @@ const USD_OP_RERARD_PERCENTAGE = [
 
 
 module.exports  =  { 
+	WETH_ADDRESS_ON_ETHEREUM,
+	USDT_ADDRESS_ON_ETHEREUM,
+	ETHEREUM_MAINNET_RPC,
+	UINISWAP_V2_ROUTER_ADDRESS,
 	USD_OP_RERARD_PERCENTAGE,
 	jwt_enc_key, 
 	admin_address,
