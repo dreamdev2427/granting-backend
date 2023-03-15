@@ -135,7 +135,7 @@ exports.getTotalDonatedAmountsOfUser = (req, res) => {
                 return res.send({ code:0, data: sum, sumOPs: sumOPs, message: "" });
             }
             else {
-                return res.send({ code:0, data: 0, message: "" });
+                return res.send({ code:0, data: 0, sumOPs:0,  message: "" });
             }
         }
     });
