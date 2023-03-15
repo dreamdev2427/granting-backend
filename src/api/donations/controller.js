@@ -17,39 +17,6 @@ exports.createDonation = async (req, res) => {
     var chainId = req.body.chainId;
     let rewardOPAmount = 0;
 
-    if(chainId === "0xa" || chainId == 10 || chainId === "a")
-    {
-		try{
-				const weiAmount = web3WS1.utils.toWei(amount.toString(), "ether").toString();
-                const usdMweiAmount = await uniswapV2Rounter.methods.getAmountsOut(weiAmount, [WETH_ADDRESS_ON_ETHEREUM,USDT_ADDRESS_ON_ETHEREUM]).call();                
-                const usdAmount = Number(web3WS1.utils.fromWei(usdMweiAmount.toString(), "mwei").toString());
-                console.log(`ETH : ${amount} ===> USD ${usdAmount}`);
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[0].min && usdAmount < USD_OP_RERARD_PERCENTAGE[0].max)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[0].reward;
-                }
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[1].min && usdAmount < USD_OP_RERARD_PERCENTAGE[1].max)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[1].reward;
-                }
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[2].min && usdAmount < USD_OP_RERARD_PERCENTAGE[2].max)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[2].reward;
-                }
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[3].min && usdAmount < USD_OP_RERARD_PERCENTAGE[3].max)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[3].reward;
-                }
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[4].min)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[4].reward;
-                }                
-            }catch(error)
-            {
-                console.log(error.message);
-            }
-    }
-
     var newDonation = new Donation({
         campaign: new ObjectId(campaign),
         amount,
@@ -130,12 +97,11 @@ exports.getTotalDonatedAmountsOfUser = (req, res) => {
                 for(let idx = 0; idx < docs.length; idx++)
                 {
                     sum += Number(docs[idx].amount);
-                    sumOPs += Number(docs[idx]?.opReward || 0);
                 }
-                return res.send({ code:0, data: sum, sumOPs: sumOPs, message: "" });
+                return res.send({ code:0, data: sum, message: "" });
             }
             else {
-                return res.send({ code:0, data: 0, sumOPs:0,  message: "" });
+                return res.send({ code:0, data: 0,   message: "" });
             }
         }
     });

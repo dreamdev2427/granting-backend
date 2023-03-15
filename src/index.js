@@ -8,6 +8,7 @@ const v2RouterABI = require("./abis/uniswapv2router.json");
 const {setIntervalAsync} = require("set-interval-async/dynamic");
 const { USD_OP_RERARD_PERCENTAGE, UINISWAP_V2_ROUTER_ADDRESS, ETHEREUM_MAINNET_RPC } = require("../env");
 const Campaign = db.Campaign;
+const OpRewards = db.OpRewards;
 
 // var server = require('http').createServer(app);
 // const port = process.env.PORT || 5000;
@@ -34,7 +35,6 @@ const web3ETH = new Web3(ETHEREUM_MAINNET_RPC);
 const uniswapV2Rounter = new web3ETH.eth.Contract(v2RouterABI, UINISWAP_V2_ROUTER_ADDRESS);
 var scanBlockNumber1 = 0;
 var maxBlockNumber1 = 0;
-var ethereumUsdPrice = 0;
 
 const getBlockNumber_on_optimism = () => {
 	web3Opti.eth.getBlockNumber()
@@ -69,9 +69,9 @@ const getData_on_optimism = async () => {
 const Donation_monitor_on_optimism = async (blockNumber, toBlockNumber) => {
 	try 
 	{    
-    var keywordQuerys = [];
-    keywordQuerys.push({ chainId: "10" });
-    keywordQuerys.push({ chainId: "0xa" });
+		var keywordQuerys = [];
+		keywordQuerys.push({ chainId: "10" });
+		keywordQuerys.push({ chainId: "0xa" });
 		await Campaign.find({ $or: keywordQuerys })
 		.then(async (docs) => {
 			var donationPromises = [];
@@ -105,37 +105,46 @@ const Donation_monitor_on_optimism = async (blockNumber, toBlockNumber) => {
 							const caller = objTemp.addr;
 							const nativeValue = objTemp.value;
 
-// Donate $3 - 5 to get 0.2 OP Tokens
-// Donate $5 - 10 to get 0.9 OP Tokens
-// Donate $10 - 50 to get 5 OP Tokens
-							try{
-								
-				const weiAmount = web3Opti.utils.toWei(amount.toString(), "ether").toString();
-                const usdMweiAmount = await uniswapV2Rounter.methods.getAmountsOut(weiAmount, [WETH_ADDRESS_ON_ETHEREUM,USDT_ADDRESS_ON_ETHEREUM]).call();                
-                const usdAmount = Number(web3Opti.utils.fromWei(usdMweiAmount.toString(), "mwei").toString());
-                console.log(`ETH : ${amount} ===> USD ${usdAmount}`);
-                let rewardOPAmount = 0;
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[0].min && usdAmount < USD_OP_RERARD_PERCENTAGE[0].max)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[0].reward
-                }
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[1].min && usdAmount < USD_OP_RERARD_PERCENTAGE[1].max)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[1].reward
-                }
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[2].min && usdAmount < USD_OP_RERARD_PERCENTAGE[2].max)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[2].reward
-                }
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[3].min && usdAmount < USD_OP_RERARD_PERCENTAGE[3].max)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[3].reward
-                }
-                if(usdAmount >= USD_OP_RERARD_PERCENTAGE[4].min)
-                {
-                  rewardOPAmount = USD_OP_RERARD_PERCENTAGE[4].reward
-                }
+							try{								
+								const fromWeiAmount = web3Opti.utils.fromWei(nativeValue.toString(), "ether").toString();
+								const usdMweiAmount = await uniswapV2Rounter.methods.getAmountsOut(nativeValue.toString(), [WETH_ADDRESS_ON_ETHEREUM,USDT_ADDRESS_ON_ETHEREUM]).call();                
+								const usdAmount = Number(web3Opti.utils.fromWei(usdMweiAmount.toString(), "mwei").toString());
+								console.log(`ETH : ${fromWeiAmount} ===> USD ${usdAmount}`);
+								let rewardOPAmount = 0;
+								if(usdAmount >= USD_OP_RERARD_PERCENTAGE[0].min && usdAmount < USD_OP_RERARD_PERCENTAGE[0].max)
+								{
+								rewardOPAmount = USD_OP_RERARD_PERCENTAGE[0].reward
+								}
+								if(usdAmount >= USD_OP_RERARD_PERCENTAGE[1].min && usdAmount < USD_OP_RERARD_PERCENTAGE[1].max)
+								{
+								rewardOPAmount = USD_OP_RERARD_PERCENTAGE[1].reward
+								}
+								if(usdAmount >= USD_OP_RERARD_PERCENTAGE[2].min && usdAmount < USD_OP_RERARD_PERCENTAGE[2].max)
+								{
+								rewardOPAmount = USD_OP_RERARD_PERCENTAGE[2].reward
+								}
+								if(usdAmount >= USD_OP_RERARD_PERCENTAGE[3].min && usdAmount < USD_OP_RERARD_PERCENTAGE[3].max)
+								{
+								rewardOPAmount = USD_OP_RERARD_PERCENTAGE[3].reward
+								}
+								if(usdAmount >= USD_OP_RERARD_PERCENTAGE[4].min)
+								{
+								rewardOPAmount = USD_OP_RERARD_PERCENTAGE[4].reward
+								}
                 
+								if(rewardOPAmount > 0)
+								{
+									new OpRewards({
+										wallet: caller,
+										chainId: "10",
+										amount: rewardOPAmount,
+										txHash: txHash
+									}).save(data => {
+										console.log("saved new op reward infor : ", data);
+									}).catch(error => {
+										console.log(error);
+									})
+								}
 							}catch(error)
 							{
 								continue;
@@ -152,24 +161,8 @@ const Donation_monitor_on_optimism = async (blockNumber, toBlockNumber) => {
 		})
 		.catch((error) => {
 			console.log(error);
-			return;
 		})		
 	} catch (error) {
 		console.log("Something went wrong 1: " + error.message)
 	}
 }
-
-
-const priceFetching_loop = () => {
-  setIntervalAsync(async () => {
-    try {
-      let binanceResponse = await axios.get("https://api.binance.com/api/v3/ticker/price?symbols=%5B%22ETHUSDT%22%5D");
-      currentPrices = binanceResponse?.data ? binanceResponse.data : [];
-      ethereumUsdPrice =
-        currentPrices.find((item) => item.symbol === "ETHUSDT")?.price || 0;
-
-    } catch (error) {}
-  }, 3000);
-};
-
-priceFetching_loop();
