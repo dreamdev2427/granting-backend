@@ -53,7 +53,7 @@ exports.getOpRewardsOfUser = (req, res) => {
 		{$group: {_id:"$wallet", amount:{$sum:"$amount"}}}
 	])
 	.then((docs) => { 
-        return res.send({ code: 0, data: docs[0], message:"" });
+        return res.send({ code: 0, data: docs[0] || null, message:"" });
     }).catch((err) => {
         return res.send({ code:-1, data:0, message: "" });
     });
